@@ -7,6 +7,10 @@ RETRY_COUNT=1
 BITRATE="192k"
 SPOTIFY_PREFIX="https://open.spotify.com/playlist/"
 
+# Go back from music-setup folder
+cd ..
+echo "Working from directory: $PWD"
+
 # Check config file
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "[-] Configuration file '$CONFIG_FILE' not found!"

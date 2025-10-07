@@ -13,6 +13,10 @@ if ! command -v spotdl &> /dev/null; then
     exit 1
 fi
 
+# Go back from music-setup folder
+cd ..
+echo "Working from directory: $PWD"
+
 # Check config file
 if [[ ! -f "$CONFIG_FILE" ]]; then
     echo "[-] Configuration file '$CONFIG_FILE' not found!"
@@ -35,12 +39,21 @@ while read -r line; do
     mkdir -p "$target_dir"
     cd "$target_dir" || continue
 
+    spotdl_file_name="$target_dir/$folder.spotdl"
+
     echo "[+] Syncing playlist '$playlist_url' into '$target_dir'"
 
     attempt=1
     while [[ $attempt -le $RETRY_COUNT ]]; do
         echo "[+] Attempt $attempt..."
-        spotdl --m3u {list} --bitrate "$BITRATE" --save-file "$target_dir.spotdl" save "$playlist_url"
+
+        if [[ ! -f "$spotdl_file_name" ]]; then
+            echo "[+] Spotdl sync file '$spotdl_file_name' not found"
+            spotdl --sync-without-deleting --bitrate "$BITRATE" --save-file "$spotdl_file_name" sync "$playlist_url"
+        else
+            echo "[+] Using Spotdl sync file '$spotdl_file_name' found"
+            spotdl --sync-without-deleting --bitrate "$BITRATE" sync "$spotdl_file_name"
+        fi
         exit_code=$?
 
         if [[ $exit_code -eq 0 ]]; then
